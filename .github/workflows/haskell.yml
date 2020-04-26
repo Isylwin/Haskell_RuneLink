@@ -12,22 +12,57 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: mstksg/setup-stack@v1
-    - uses: actions/setup-haskell@v1
+#    - uses: mstksg/setup-stack@v1
+          
+    - name: Check out
+      uses: actions/checkout@v2
+         
+    - name: Cache stack global package db
+      id:   stack-global
+      uses: actions/cache@v1
       with:
-        ghc-version: '8.8.1'
-        cabal-version: '2.4'
+        path: ~/.stack
+        key: ${{ runner.os }}-stack-global-${{ matrix.plan.key }}-${{ hashFiles('**.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-stack-global-${{ matrix.plan.key }}
+          ${{ runner.os }}-stack-global
+  
+    - name: Cache stack-installed programs in ~/.local/bin
+      id:   stack-programs
+      uses: actions/cache@v1
+      with:
+        path: ~/.local/bin
+        key: ${{ runner.os }}-stack-programs-${{ matrix.plan.key }}-${{ hashFiles('**.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-stack-programs-${{ matrix.plan.key }}
+          ${{ runner.os }}-stack-programs
+
+    - name: Cache .stack-work
+      uses: actions/cache@v1
+      with:
+        path: .stack-work
+        key: ${{ runner.os }}-stack-work-${{ matrix.plan.key }}-${{ hashFiles('**.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-stack-work-${{ matrix.plan.key }}
+          ${{ runner.os }}-stack-work
+  
     - name: Install GL dependency
       run: |
         sudo apt-get -y update
         sudo apt-get -y install libglu1-mesa-dev freeglut3-dev mesa-common-dev
-    - name: Install dependencies
+
+    - name: Install GHC
       run: |
         stack setup --install-ghc
-    - name: Build
+
+    - name: Install Dependencies
       run: |
         stack build --only-dependencies
+  
+    - name: Build
+      run: |
+        stack build --fast --ghc-options=-Werror --no-terminal
+  
     - name: Run tests
       run: |
         stack test
