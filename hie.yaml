@@ -1,0 +1,8 @@
+cradle:
+  stack:
+    - path: ./test
+      component: "RuneLink:test:RuneLink-test"
+    - path: ./src
+      component: "RuneLink:lib"
+    - path: ./app
+      component: "RuneLink:exe:RuneLink-exe"

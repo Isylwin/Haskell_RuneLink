@@ -1,5 +1,6 @@
 module Main(main) where
 
+import Control.Applicative
 import Graphics.Gloss
 
 runeHoleRadius = 22.5
@@ -28,12 +29,13 @@ runeHole (x,y) = translate x y $ circleSolid runeHoleRadius
 
 runeHoleLocs :: Float -> [Float]
 runeHoleLocs n = 
-    let translate = (-) $ (boardSize n) / 2
+    let shift = boardSize n / 2
         offset = runeHoleRadius + runeHoleOffset
-    in map (translate . (+offset) . (*runeHoleDistance)) [0..n-1]
+        transform = (shift-) . (offset+) . (runeHoleDistance*)
+    in map transform [0..n-1]
 
 runeHoles :: [Picture]
-runeHoles = map runeHole $ (,) <$> (runeHoleLocs runeHoleXAmount) <*> (runeHoleLocs runeHoleYAmount)
+runeHoles = map runeHole $ liftA2 (,) (runeHoleLocs runeHoleXAmount) (runeHoleLocs runeHoleYAmount)
 
 drawing :: Picture
 drawing = pictures $ runelinkBoard : runeHoles
