@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 98c693a8dc1f6517b23cab28aa6aac8a09d312e83e12a85e0f784844c367554b
+-- hash: 9f49ba383fd1e536dc3d16922fa5bcc949ccdee69a140a2aba0ba0b127027a3d
 
 name:           RuneLink
 version:        0.1.0.0
@@ -36,6 +36,7 @@ library
       src
   build-depends:
       base >=4.7 && <5
+    , containers
     , gloss
     , matrix
   default-language: Haskell2010
@@ -50,6 +51,7 @@ executable RuneLink-exe
   build-depends:
       RuneLink
     , base >=4.7 && <5
+    , containers
     , gloss
     , matrix
   default-language: Haskell2010
@@ -59,6 +61,7 @@ test-suite RuneLink-test
   main-is: Spec.hs
   other-modules:
       RuneLink.Base.GameSpec
+      RuneLink.Base.UtilSpec
       Paths_RuneLink
   hs-source-dirs:
       test
@@ -66,6 +69,7 @@ test-suite RuneLink-test
   build-depends:
       RuneLink
     , base >=4.7 && <5
+    , containers
     , gloss
     , hspec
     , matrix

@@ -2,6 +2,8 @@ module Main(main) where
 
 import Control.Applicative
 import Graphics.Gloss
+import Graphics.Gloss.Data.ViewPort
+import RuneLink.Base.Game
 
 runeHoleRadius = 22.5
 runeHoleOffset = 5
@@ -37,8 +39,22 @@ runeHoleLocs n =
 runeHoles :: [Picture]
 runeHoles = map runeHole $ liftA2 (,) (runeHoleLocs runeHoleXAmount) (runeHoleLocs runeHoleYAmount)
 
-drawing :: Picture
-drawing = pictures $ runelinkBoard : runeHoles
+drawing :: Temp -> Picture
+drawing _ = pictures $ runelinkBoard : runeHoles
 
+initBoard = createBoard 6 7
+initLoc = (1,1)
+player = Player 1
+initTemp = Temp initBoard initLoc
+
+data Temp = Temp {board :: Board, currentLoc :: (Int,Int)} deriving(Show)
+
+update :: ViewPort -> Float -> Temp -> Temp
+update _ _ (Temp b l) = 
+    let newLoc = (fst l + 1, snd l + 1)
+        newBoard = setRuneOnBoard (Placed player) newLoc b
+        victories = checkVictory 4 player 1 3 newBoard
+    in Temp newBoard newLoc
+    
 main :: IO ()
-main = display window background drawing
+main = simulate window background 60 initTemp drawing update
